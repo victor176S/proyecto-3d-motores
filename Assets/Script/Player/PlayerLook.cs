@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerLook : MonoBehaviour
 {
@@ -20,14 +23,60 @@ public class PlayerLook : MonoBehaviour
     private float cameraPitch;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    void Awake()
+    {
+        if (cameraTransform == null && Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("OnSceneLoaded: " + scene.name);
+        Debug.Log(mode);
+    }
     void Start()
     {
-        
+        float yaw = transform.eulerAngles.y;
+
+        transform.rotation = Quaternion.Euler(0, yaw, 0);
+
+        cameraPitch = 0f;
+
+        lookInput = Vector2.zero;
+
+        if (cameraTransform != null)
+        {
+            cameraTransform.localRotation = Quaternion.identity;
+        }
     }
+
+    private void OnLook(InputValue value)
+    {
+        lookInput = value.Get<Vector2>();
+    }
+
+    
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (cameraTransform == null)
+        {
+            return;
+        }
+        HandleLook();
+    }
+
+    private void HandleLook()
+    {
+        throw new NotImplementedException();
     }
 }
