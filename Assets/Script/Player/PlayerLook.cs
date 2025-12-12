@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -22,6 +24,10 @@ public class PlayerLook : MonoBehaviour
 
     private float cameraPitch;
 
+    [SerializeField] private PlayerInput playerInput;
+
+    [SerializeField] private float delaySeconds;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     void Awake()
@@ -30,10 +36,27 @@ public class PlayerLook : MonoBehaviour
         {
             cameraTransform = Camera.main.transform;
         }
+
+        if(playerInput == null)
+        {
+            playerInput = GetComponent<PlayerInput>();
+        }
+
+        if(playerInput != null)
+        {
+            playerInput.DeactivateInput();
+        }
     }
 
     void OnEnable()
     {
+
+       // Vector3 screenPosition = Input.mousePosition;
+
+       // Vector3 worldPosition = Camera.main.ScreenToWorldPoint(
+       //     new Vector3(screenPosition.x, screenPosition.y, Camera.main.nearClipPlane)
+        //    );
+
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -55,12 +78,26 @@ public class PlayerLook : MonoBehaviour
         if (cameraTransform != null)
         {
             cameraTransform.localRotation = Quaternion.identity;
+
+            StartCoroutine("StartInput");
+
+
         }
     }
 
     private void OnLook(InputValue value)
     {
         lookInput = value.Get<Vector2>();
+    }
+
+    IEnumerator StartInput()
+    {
+        yield return new WaitForSeconds(delaySeconds);
+
+        if (playerInput != null)
+        {
+            playerInput.ActivateInput();
+        }
     }
 
     
@@ -77,6 +114,19 @@ public class PlayerLook : MonoBehaviour
 
     private void HandleLook()
     {
-        throw new NotImplementedException();
+        float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
+
+        float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
+
+        transform.Rotate(0f, mouseX, 0f);
+
+        cameraPitch -= mouseY;
+
+        cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
+
+        cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
+
+
+
     }
 }

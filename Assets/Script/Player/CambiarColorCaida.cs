@@ -5,7 +5,7 @@ using UnityEngine;
 public class CambiarColorCaida : MonoBehaviour
 {
 
-    private Color groundedColor = Color.red;
+    private Color groundedColor = Color.green;
 
     private Color goingUpColor = Color.blue;
 
