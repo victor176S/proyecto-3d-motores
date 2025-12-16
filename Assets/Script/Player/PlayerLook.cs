@@ -28,6 +28,10 @@ public class PlayerLook : MonoBehaviour
 
     [SerializeField] private float delaySeconds;
 
+    private Renderer[] renderers;
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     void Awake()
@@ -45,6 +49,18 @@ public class PlayerLook : MonoBehaviour
         if(playerInput != null)
         {
             playerInput.DeactivateInput();
+        }
+
+        renderers = GetComponentsInChildren<Renderer>(true);
+
+        Ocultar();
+    }
+
+    private void Ocultar()
+    {
+        foreach (var r in renderers)
+        {
+            r.enabled = false;
         }
     }
 
@@ -94,13 +110,23 @@ public class PlayerLook : MonoBehaviour
     {
         yield return new WaitForSeconds(delaySeconds);
 
+        Mostrar();
+
         if (playerInput != null)
         {
             playerInput.ActivateInput();
         }
     }
 
-    
+    private void Mostrar()
+    {
+        foreach (var r in renderers)
+        {
+            r.enabled = true;
+        }
+    }
+
+
 
     // Update is called once per frame
     void Update()

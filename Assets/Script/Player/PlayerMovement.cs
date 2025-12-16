@@ -26,6 +26,12 @@ public class PlayerMovement : MonoBehaviour
     private float verticalVelocity;
 
     private bool jumpRequested = false;
+
+    [SerializeField] private AudioSource audioSourceSalto;
+
+    [SerializeField] private AudioSource audioSourcePasos;
+
+    [SerializeField] private int minSpeedSound = 1;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -46,6 +52,36 @@ public class PlayerMovement : MonoBehaviour
         }
 
         ControlMovimiento();
+
+        SonidoPasos();
+    }
+
+    private void SonidoPasos()
+    {
+        if (audioSourcePasos == null)
+        {
+            return;
+        }
+
+        Vector3 v = characterController.velocity;
+
+        v.y = 0;
+
+        bool andando = characterController.isGrounded && v.magnitude > minSpeedSound;
+
+        if (andando)
+        {
+            if (!audioSourcePasos.isPlaying)
+            {
+                audioSourcePasos.Play();
+            }
+        }
+        
+        else if(audioSourcePasos.isPlaying)
+                {
+                    audioSourcePasos.Stop();
+                }
+        
     }
 
     private void OnJump(InputValue value)
@@ -86,6 +122,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (isGrounded && jumpRequested)
         {
+
+            if (audioSourceSalto == null)
+            {
+                audioSourceSalto.Play();
+            }
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
             jumpRequested = false;
